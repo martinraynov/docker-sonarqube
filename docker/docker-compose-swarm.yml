@@ -1,0 +1,59 @@
+version: '3.5'
+
+networks:
+  default:
+    external: true
+    name: lb-common
+  sonarnet:
+
+volumes:
+  sonarqube_conf:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_bundled-plugins:
+  postgresql:
+  postgresql_data:
+
+services:
+  sonarqube:
+    image: sonarqube:8.6.0-community
+    ports:
+      - "9000:9000"
+    deploy:
+      replicas: 1
+      labels:
+        traefik.frontend.rule: "Host:sonarqube.local.io"
+        traefik.frontend.entryPoints: "http"
+        traefik.docker.network: "lb-common"
+        traefik.enable: "true"
+        traefik.backend: "sonarqube"
+        traefik.port: 9000
+        traefik.backend.healthcheck.path: /
+        traefik.backend.healthcheck.interval: 1s
+        traefik.backend.healthcheck.port: 9000
+        traefik.backend.healthcheck.scheme: http
+    networks:
+      - default
+      - sonarnet
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      # - sonar.web.port=80
+      # - sonar.jdbc.url=jdbc:postgresql://sonarqube_db:5432/sonar
+      # - sonar.jdbc.username=sonar
+      # - sonar.jdbc.password=sonar
+    volumes:
+      - sonarqube_conf:/opt/sonarqube/conf
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_bundled-plugins:/opt/sonarqube/lib/bundled-plugins
+      - ../data/sonarqube/data:/opt/sonarqube/data
+
+  # sonarqube_db:
+  #   image: postgres:12
+  #   networks:
+  #     - sonarnet
+  #   environment:
+  #     - POSTGRES_USER=sonar
+  #     - POSTGRES_PASSWORD=sonar
+  #   volumes:
+  #     - postgresql:/var/lib/postgresql
+  #     - postgresql_data:/var/lib/postgresql/data
