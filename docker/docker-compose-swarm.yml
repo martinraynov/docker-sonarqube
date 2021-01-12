@@ -17,8 +17,6 @@ volumes:
 services:
   sonarqube:
     image: sonarqube:8.6.0-community
-    ports:
-      - "9000:9000"
     deploy:
       replicas: 1
       labels:
