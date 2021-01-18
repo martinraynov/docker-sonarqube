@@ -1,5 +1,5 @@
-data/postgresql/*
+data/postgresql/*/*
 data/sonarqube/*/*
 
-!data/postgresql/.gitkeep
+!data/postgresql/*/.gitkeep
 !data/sonarqube/*/.gitkeep
