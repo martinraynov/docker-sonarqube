@@ -31,8 +31,10 @@ services:
         traefik.backend.healthcheck.port: 9000
         traefik.backend.healthcheck.scheme: http
     networks:
-      - default
-      - sonarnet
+      default:
+        aliases: 
+          - sonarqube.local.io
+      sonarnet:
     environment:
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
       # - sonar.web.port=80
